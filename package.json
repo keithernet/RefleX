@@ -8,5 +8,7 @@
   },
   "author": "Keith O'Brien",
   "license": "MIT",
-  "dependencies": {}
+  "dependencies": {
+    "rxjs": "^6.5.4"
+  }
 }

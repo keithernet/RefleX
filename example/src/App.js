@@ -1,26 +1,36 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, {useState} from 'react';
 import './App.css';
+import {interval, ReplaySubject} from "rxjs";
+import {filter, share} from "rxjs/operators";
+import {NumberDisplay} from "./NumberDisplay";
+import {Combined} from "./Combined";
 
-function App() {
+const timer = interval(1000).pipe(share());
+const remember$ = new ReplaySubject();
+timer.subscribe(remember$);
+
+const App = () => {
+  const [counts, setCount] = useState([1, 1]);
+  const evens$ = remember$.pipe(filter(c => c % 2 === 0));
+  const odds$ = remember$.pipe(filter(c => c % 2 !== 0));
+
+  const getCounter = i => (i % 2 === 0)
+    ? (<div>Even events: <NumberDisplay count={evens$}/></div>)
+    : (<div>Odd events: <NumberDisplay count={odds$}/></div>);
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <button onClick={() => setCount(counts.concat([1]))}>Add</button>
+      <button onClick={() => setCount(counts.slice(0, counts.length - 1))}>Remove</button>
+      <div>
+        {counts.map((c, i) => getCounter(i))}
+      </div>
+      <div>
+        <h3>Both</h3>
+        <Combined streams={[evens$, odds$]}/>
+      </div>
     </div>
   );
-}
+};
 
 export default App;
