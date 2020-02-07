@@ -1,6 +1,5 @@
-import {combineLatest, isObservable, Observable} from "rxjs";
+import {combineLatest} from "rxjs";
 import {useEffect, useState} from "react";
-import {map, tap, withLatestFrom} from "rxjs/operators";
 
 export function useObservable(stream, initial){
   const [state, setState] = useState(initial);
@@ -17,7 +16,7 @@ export function useObservable(stream, initial){
 
 export function useObservables(observables, initial){
   const [state, setState] = useState(initial);
-  const all$= combineLatest(...observables);
+  const all$ = combineLatest(...observables);
 
   useEffect(() => {
     const unsub = all$.subscribe(all => setState(all));
