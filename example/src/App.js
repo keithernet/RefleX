@@ -1,13 +1,13 @@
 import React, {useState} from 'react';
 import './App.css';
 import {interval, merge, of, ReplaySubject} from "rxjs";
-import {delay, filter, map, pluck, share, startWith, withLatestFrom} from "rxjs/operators";
+import {delay, filter, map, pluck, share, startWith, tap, withLatestFrom} from "rxjs/operators";
 import {NumberDisplay} from "./NumberDisplay";
 import {Combined} from "./Combined";
 import {TextDisplay} from "./TextDisplay";
+import {times} from "ramda";
 
-const timer$ = interval(1000).pipe(share());
-
+const timer$ = interval(500); // .pipe(tap(i => console.log(i)));
 const other$ = merge(of('first value'), of('second value').pipe(delay(10000)));
 
 const aggregate$ = timer$.pipe(
@@ -19,12 +19,12 @@ const aggregate$ = timer$.pipe(
 const state$ = new ReplaySubject();
 aggregate$.subscribe(state$);
 
-const App = () => {
-  const [componentCount, setComponentCount] = useState([1, 1]);
+const time$ = state$.pipe(pluck('time'));
+const evens$ = time$.pipe(filter(c => c % 2 === 0));
+const odds$ = time$.pipe(filter(c => c % 2 !== 0));
 
-  const time$ = state$.pipe(pluck('time'));
-  const evens$ = time$.pipe(filter(c => c % 2 === 0));
-  const odds$ = time$.pipe(filter(c => c % 2 !== 0));
+const App = () => {
+  const [componentCount, setComponentCount] = useState(2);
 
   const getCounter = i => (i % 2 === 0)
     ? (<div key={i}>Even events: <NumberDisplay count={evens$}/></div>)
@@ -33,10 +33,10 @@ const App = () => {
   return (
     <div className="App">
       <h1><TextDisplay text={state$.pipe(pluck('text'))}/></h1>
-      <button onClick={() => setComponentCount(componentCount.concat([1]))}>Add</button>
-      <button onClick={() => setComponentCount(componentCount.slice(0, componentCount.length - 1))}>Remove</button>
+      <button onClick={() => setComponentCount(componentCount + 1)}>Add</button>
+      <button onClick={() => setComponentCount(componentCount - 1)}>Remove</button>
       <div>
-        {componentCount.map((c, i) => getCounter(i))}
+        {times((idx) => getCounter(idx), componentCount)}
       </div>
       <div>
         <h3>Both</h3>

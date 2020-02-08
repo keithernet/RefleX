@@ -1,12 +1,21 @@
-import {combineLatest} from "rxjs";
+import {combineLatest, isObservable} from "rxjs";
 import {useEffect, useState} from "react";
 
-export function useObservable(stream, initial){
+export function useObservable(sources, initial){
+  const sourceList = toList(sources);
+  verify(sourceList);
+
+  return attachStream(sourceList, initial);
+}
+
+function attachStream(sources, initial){
   const [state, setState] = useState(initial);
+
   useEffect(() => {
-    const unsub = stream.subscribe(value => setState(value));
+    const source$ = combineLatest(...sources);
+    const unsub = source$.subscribe(setState);
+
     return () => {
-      console.log('unsubscribing');
       unsub.unsubscribe();
     }
   }, []);
@@ -14,17 +23,15 @@ export function useObservable(stream, initial){
   return state;
 }
 
-export function useObservables(observables, initial){
-  const [state, setState] = useState(initial);
-  const all$ = combineLatest(...observables);
+function verify(hopefuls){
+  const nonObservables = hopefuls.reduce((acc, curr, idx) => !isObservable(curr) ? acc.concat({obj: curr, idx}) : acc, []);
 
-  useEffect(() => {
-    const unsub = all$.subscribe(all => setState(all));
-    return () => {
-      console.log('unsubscribing');
-      unsub.unsubscribe();
-    }
-  }, []);
+  if(nonObservables.length > 0){
+    const message = nonObservables.reduce((acc, curr) => `${acc} Item ${curr.idx} is ${typeof curr.obj}.`, '');
+    throw new Error(`useObservable can only attach to observables. ${message}`);
+  }
+}
 
-  return state;
+function toList(items){
+  return Array.isArray(items) ? items : [items];
 }

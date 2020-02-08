@@ -9,6 +9,7 @@
   "author": "Keith O'Brien",
   "license": "MIT",
   "dependencies": {
+    "ramda": "^0.27.0",
     "rxjs": "^6.5.4"
   }
 }

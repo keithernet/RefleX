@@ -1,8 +1,8 @@
 import React from "react";
-import {useObservables} from "reflex";
+import {useObservable} from "reflex";
 
 export const Combined = props => {
-  const [even, odd] = useObservables(props.streams, []);
+  const [even, odd] = useObservable(props.streams, []);
 
   return (
     <div>{even}: {odd}</div>
