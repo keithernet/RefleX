@@ -10,6 +10,7 @@
   "license": "MIT",
   "dependencies": {
     "ramda": "^0.27.0",
+    "react": "^16.12.0",
     "rxjs": "^6.5.4"
   }
 }

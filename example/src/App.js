@@ -1,11 +1,12 @@
 import React, {useState} from 'react';
 import './App.css';
 import {interval, merge, of, ReplaySubject} from "rxjs";
-import {delay, filter, map, pluck, share, startWith, tap, withLatestFrom} from "rxjs/operators";
+import {delay, filter, map, pluck, startWith, withLatestFrom} from "rxjs/operators";
 import {NumberDisplay} from "./NumberDisplay";
 import {Combined} from "./Combined";
 import {TextDisplay} from "./TextDisplay";
 import {times} from "ramda";
+import {CombinedObject} from "./CombinedObject";
 
 const timer$ = interval(500); // .pipe(tap(i => console.log(i)));
 const other$ = merge(of('first value'), of('second value').pipe(delay(10000)));
@@ -41,6 +42,7 @@ const App = () => {
       <div>
         <h3>Both</h3>
         <Combined streams={[evens$, odds$]}/>
+        <CombinedObject streams={({even: evens$, odd: odds$})}/>
       </div>
     </div>
   );
