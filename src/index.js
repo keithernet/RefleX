@@ -1,13 +1,23 @@
 import {combineLatest, isObservable} from "rxjs";
 import {useEffect, useState} from "react";
-import {compose, fromPairs, keys, values, zip} from "ramda";
+import {compose, fromPairs, head, keys, values, zip} from "ramda";
 
 export function useObservable(sources, initial){
-  if(Array.isArray(sources) || isObservable(sources)){
-    return attachArray(asList(sources), initial);
+  if(isObservable(sources)){
+    return attachObservable(sources, initial);
+  } else if(Array.isArray(sources)){
+    return attachArray(sources, initial);
   } else{
     return attachObject(sources, initial);
   }
+}
+
+function attachObservable(sources, initial){
+  const [state, setState] = useState(initial);
+  useStreamEffect([sources], (newState) => {
+    return setState(head(newState))
+  });
+  return state;
 }
 
 function attachArray(sources, initial){
