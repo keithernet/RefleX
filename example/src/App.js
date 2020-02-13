@@ -7,6 +7,7 @@ import {Combined} from "./Combined";
 import {TextDisplay} from "./TextDisplay";
 import {times} from "ramda";
 import {CombinedObject} from "./CombinedObject";
+import {WithInternalState} from "./WithInternalState";
 
 const timer$ = interval(500); // .pipe(tap(i => console.log(i)));
 const other$ = merge(of('first value'), of('second value').pipe(delay(10000)));
@@ -43,6 +44,7 @@ const App = () => {
         <h3>Both</h3>
         <Combined streams={[evens$, odds$]}/>
         <CombinedObject streams={({even: evens$, odd: odds$})}/>
+        <WithInternalState streams={({even: evens$, odd: odds$})}/>
       </div>
     </div>
   );
