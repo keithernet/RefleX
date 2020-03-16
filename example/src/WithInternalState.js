@@ -1,7 +1,6 @@
 import React, {useState} from "react";
 import {useObservable} from "reflex";
-import {interval, Subject} from "rxjs";
-import {tap} from "rxjs/operators";
+import {Subject} from "rxjs";
 
 export const WithInternalState = ({streams}) => {
     const [clicks, setClicks] = useState(0);
